@@ -21,6 +21,14 @@ The system:
 - Plans a collision-free path (A*) to the goal pose that satisfies the relation
 - Animates the motion
 
+#### Reminder for me: 
+
+To actviate the virtual environment:
+
+`cd Documents/py3theker/`
+
+`source bin/activate`
+
 ## Why this is interesting
 
 This project was developed as a compact demonstration of language-guided reasoning and control. The goal is not to build a full manipulation pipeline, but to show how a robot can interpret natural-language commands, perceive its environment, and plan feasible actions within it. By deliberately keeping everything in 2D and simulation-only, the focus stays on the integration of perception, language understanding, and motion planning, rather than on hardware details.
