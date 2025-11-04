@@ -10,7 +10,10 @@ To install the requirements run:
 
 To run the demo just execute this:
 
-`python mvp.py --cmd "move the green triangle next to the blue circle"`
+`python mvp.py --cmd "move the robot close to the blue circle" --controller grid`
+
+To run the demo with the MPC controller use:
+`python mvp.py --cmd "move the robot close to the blue circle" --controller mpc`
 
 The system:
 - Parses the sentence (color + shape + relation)
