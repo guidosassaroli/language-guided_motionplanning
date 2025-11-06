@@ -10,11 +10,11 @@ To install the requirements run:
 
 To run the demo just execute this:
 
-`python mvp.py --cmd "move the robot close to the blue circle" --controller grid`
+`python main.py --cmd "move the robot close to the blue circle" --controller grid --parser rule`
 
 To run the demo with the MPC controller use:
 
-`python mvp.py --cmd "move the robot close to the blue circle" --controller mpc`
+`python main.py --cmd "move the robot close to the blue circle" --controller mpc --parser rule`
 
 The system:
 - Parses the sentence (color + shape + relation)
@@ -33,7 +33,7 @@ To actviate the virtual environment:
 ### LLM run
 
 ```
-python mvp.py \
+python main.py \
   --cmd "move the robot close to the blue circle" \
   --controller mpc \
   --parser cloud \
