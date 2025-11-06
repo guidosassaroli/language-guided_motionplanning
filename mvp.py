@@ -1,4 +1,3 @@
-# mvp_mpc.py
 import argparse
 import math
 import random
@@ -12,6 +11,9 @@ from matplotlib import patches
 from scipy.ndimage import maximum_filter
 
 from mpc import make_double_integrator, build_mpc, mpc_step
+
+from llm_cloud import parse_cloud
+
 
 # ---------------------------
 # Scene & Objects
@@ -28,7 +30,7 @@ class Obj:
     xy: Tuple[int, int]
     radius: int = 2  # footprint radius in grid cells
 
-def random_scene(grid_size=40, n_objects=3, seed=0):
+def random_scene(grid_size=40, n_objects=5, seed=0):
     random.seed(seed); np.random.seed(seed)
     objs = []
     placed = set()
@@ -96,6 +98,30 @@ def parse_command(cmd: str) -> Command:
     if src_is_robot:
         src_c = None; src_s = None
     return Command(src_is_robot, src_c, src_s, rel, dst_c, dst_s)
+
+def parse_dispatch(cmd, args):
+    if args.parser == "rule":
+        return parse_command(cmd)
+    elif args.parser == "cloud":
+        data = parse_cloud(args.llm_provider, cmd, model=args.llm_model,
+                           api_key=args.llm_api_key, endpoint=args.llm_endpoint)
+    else:  # hybrid
+        try:
+            data = parse_cloud(args.llm_provider, cmd, model=args.llm_model,
+                               api_key=args.llm_api_key, endpoint=args.llm_endpoint)
+        except Exception:
+            return parse_command(cmd)
+
+    # shared mapping for cloud/hybrid when data is available
+    src_is_robot = (data["src"] == "robot")
+    return Command(
+        src_is_robot=src_is_robot,
+        src_color=None if src_is_robot else data.get("src_color"),
+        src_shape=None if src_is_robot else data.get("src_shape"),
+        relation=data["relation"],
+        dst_color=data["dst_color"],
+        dst_shape=data["dst_shape"],
+    )
 
 # ---------------------------
 # Perception (synthetic)
@@ -254,10 +280,20 @@ def path_to_refs(path_xy: List[Tuple[int,int]], N: int, robot_pos: np.ndarray):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--cmd", type=str, default="move the robot close to the blue circle")
-    parser.add_argument("--seed", type=int, default=3)
+    parser.add_argument("--seed", type=int, default=5)
     parser.add_argument("--grid", type=int, default=40)
-    parser.add_argument("--controller", type=str, choices=["grid","mpc"], default="grid",
-                        help="grid = previous stepper, mpc = linear MPC on double-integrator")
+    parser.add_argument("--controller", type=str, choices=["grid","mpc"], default="grid")
+    parser.add_argument("--parser", choices=["rule","cloud","hybrid"], default="rule")
+    parser.add_argument("--llm_provider", choices=["openai","mistral","google"], default="openai")
+    parser.add_argument("--llm_model", type=str, default="gpt-4o-mini")
+    parser.add_argument("--llm_api_key", type=str, default=None)
+    parser.add_argument("--llm_endpoint", type=str, default=None)
+
+    # parser.add_argument("--cmd", type=str, default="move the robot close to the blue circle")
+    # parser.add_argument("--seed", type=int, default=3)
+    # parser.add_argument("--grid", type=int, default=40)
+    # parser.add_argument("--controller", type=str, choices=["grid","mpc"], default="grid",
+    #                     help="grid = previous stepper, mpc = linear MPC on double-integrator")
     parser.add_argument("--dt", type=float, default=0.15)
     parser.add_argument("--N", type=int, default=20)
     parser.add_argument("--u_max", type=float, default=2.0)
@@ -265,10 +301,10 @@ def main():
     args = parser.parse_args()
 
     # scene
-    objects, occ = random_scene(args.grid, n_objects=3, seed=args.seed)
+    objects, occ = random_scene(args.grid, n_objects=5, seed=args.seed)
 
     # parse
-    C = parse_command(args.cmd)
+    C = parse_dispatch(args.cmd, args)
 
     # perceive
     det = perceive(objects)

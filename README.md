@@ -1,6 +1,6 @@
 # Language-Guided Motion Planning
 
-One-liner: A tiny simulator that turns plain English into goal-directed robot actions: parse → perceive → plan → execute.
+A tiny simulator that turns sentences into goal-directed robot actions: parse → perceive → plan → execute.
 
 ## Demo
 
@@ -13,6 +13,7 @@ To run the demo just execute this:
 `python mvp.py --cmd "move the robot close to the blue circle" --controller grid`
 
 To run the demo with the MPC controller use:
+
 `python mvp.py --cmd "move the robot close to the blue circle" --controller mpc`
 
 The system:
@@ -28,6 +29,18 @@ To actviate the virtual environment:
 `cd Documents/py3theker/`
 
 `source bin/activate`
+
+### LLM run
+
+```
+python mvp.py \
+  --cmd "move the robot close to the blue circle" \
+  --controller mpc \
+  --parser cloud \
+  --llm_provider openai \
+  --llm_model gpt-4o-mini \
+  --llm_api_key OPENAI_API_KEY
+```
 
 ## Why this is interesting
 
