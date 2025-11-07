@@ -22,15 +22,9 @@ The system:
 - Plans a collision-free path (A*) to the goal pose that satisfies the relation
 - Animates the motion
 
-#### Reminder for me: 
-
-To actviate the virtual environment:
-
-`cd Documents/py3theker/`
-
-`source bin/activate`
-
 ### LLM run
+
+LLM run is still a work in progress.
 
 ```
 python main.py \
@@ -44,9 +38,11 @@ python main.py \
 
 ## Why this is interesting
 
-This project was developed as a compact demonstration of language-guided reasoning and control. The goal is not to build a full manipulation pipeline, but to show how a robot can interpret natural-language commands, perceive its environment, and plan feasible actions within it. By deliberately keeping everything in 2D and simulation-only, the focus stays on the integration of perception, language understanding, and motion planning, rather than on hardware details.
+This project was developed as a compact demonstration of language-guided reasoning and control. The goal is to show how a robot can interpret natural-language commands, perceive its environment, and plan feasible actions within it. By deliberately keeping everything in 2D and simulation-only, the focus stays on the integration of perception, language understanding, and motion planning, rather than on hardware details.
 
-From a research perspective, this miniature environment captures the essential loop behind autonomous behavior: understand → plan → act → verify. The system fails gracefully when requested objects are not in the scene, mimicking how a real robot would detect inconsistencies between a user’s instruction and its perception.
+From a research perspective, this miniature environment captures the essential loop behind autonomous behavior: understand → plan → act → verify. 
+
+Remarl: The system fails gracefully when requested objects are not in the scene, mimicking how a real robot would detect inconsistencies between a user’s instruction and its perception.
 
 ## Technical Overview
 
@@ -55,8 +51,6 @@ Natural-language parsing is handled through a lightweight, rule-based system usi
 The synthetic perception layer emulates a vision module by generating and interpreting a randomized 2D environment, while NumPy provides efficient numerical operations for grid and geometry handling.
 Path planning is implemented with the A* algorithm on a discrete occupancy map, chosen for its clarity and guaranteed optimality on small grids, while SciPy’s morphological filters are used to inflate obstacles and simulate robot footprint constraints.
 Finally, Matplotlib handles visualization and live animation, making it easy to inspect each stage — perception, planning, and motion — in real time.
-
-This combination of simplicity, transparency, and modularity makes the project a start point to prototype ideas in language grounding, perceptual reasoning, and motion planning, all without requiring any hardware or external datasets.
 
 ## Features
 
